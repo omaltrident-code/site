@@ -9,7 +9,7 @@
   <script>
     (() => {
       let t;
-      try { t = localStorage.getItem('om-theme'); } catch { }
+      try {t = localStorage.getItem('om-theme');} catch { }
       if (t === 'dark') document.documentElement.dataset.theme = 'dark';
     })();
   </script>
@@ -796,7 +796,8 @@
     <!-- FOOTER -->
     <footer class="site-footer">
       <span>
-        2026&nbsp;©&nbsp;<a href="" target="_blank" rel="noopener noreferrer">OMAL</a>
+        2026&nbsp;©&nbsp;<a href="https://www.linkedin.com/in/omaltrident" target="_blank"
+          rel="noopener noreferrer">OMAL</a>
 
       </span>
       <a href="privacy-policy.html" target="_blank" rel="noopener noreferrer">privacy policy</a>
@@ -810,7 +811,7 @@
     btn.addEventListener('click', () => {
       const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
       document.documentElement.dataset.theme = next;
-      try { localStorage.setItem('om-theme', next); } catch { }
+      try {localStorage.setItem('om-theme', next);} catch { }
     });
 
     // Generate sidebar nav from H1 headings
@@ -916,8 +917,8 @@
       }
     });
 
-    document.addEventListener('copy', function (e) { e.preventDefault(); });
-    document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    document.addEventListener('copy', function (e) {e.preventDefault();});
+    document.addEventListener('contextmenu', function (e) {e.preventDefault();});
 
     // 2. Immediate DOM Content Swap on Visibility Loss / Capture Attempt
     const sensitiveContentStore = document.body.innerHTML;

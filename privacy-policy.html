@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Blog — Omal Matharaarachchi" />
+  <title>Blog — Omal Matharaarachchi</title>
+  <script>
+    (() => {
+      let t;
+      try { t = localStorage.getItem('om-theme'); } catch { }
+      if (t === 'dark') document.documentElement.dataset.theme = 'dark';
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
+    rel="stylesheet" />
+  <style>
+    /* ── TOKENS ─────────────────────────────────── */
+    :root {
+      --canvas: #f4f4f2;
+      --bg: #ffffff;
+      --bg2: #f0f0ee;
+      --fg: #000000;
+      --muted: #555555;
+      --subtle: #888888;
+      --border: #cacaca;
+      --soft: #e8e8e6;
+      --accent: #000000;
+    }
+
+    :root[data-theme="dark"] {
+      --canvas: #0d0d0d;
+      --bg: #161616;
+      --bg2: #1e1e1e;
+      --fg: #ffffff;
+      --muted: #888888;
+      --subtle: #555555;
+      --border: #2e2e2e;
+      --soft: #252525;
+      --accent: #ffffff;
+    }
+
+    /* ── RESET ──────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      background: var(--canvas);
+      color: var(--fg);
+      font-size: 13px;
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-color: var(--border);
+      text-underline-offset: 3px;
+      word-break: break-word;
+    }
+
+    a:hover {
+      text-decoration-color: var(--fg);
+    }
+
+    ul,
+    ol {
+      list-style: none;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: inherit;
+    }
+
+    /* ── SHELL ──────────────────────────────────── */
+    .shell {
+      width: min(1000px, 100% - 32px);
+      margin: 0 auto;
+      padding: 40px 0 64px;
+    }
+
+    /* ── TOP BAR ────────────────────────────────── */
+    .topbar-blog {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px;
+      background: var(--bg);
+    }
+
+    .topbar-blog-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: .08em;
+    }
+
+    .drop-down {
+      border: 1px solid var(--border);
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      background: var(--bg);
+      cursor: pointer;
+      user-select: none;
+      transition: background .15s, color .15s;
+    }
+
+    .drop-down:hover {
+      background: var(--fg);
+      color: var(--canvas);
+    }
+
+    .drop-down:focus-visible {
+      outline: 2px solid var(--fg);
+      outline-offset: 2px;
+    }
+
+    .drop-down svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* State Toggle Logic */
+    .drop-down .icon-active {
+      display: none;
+    }
+
+    .drop-down .icon-list {
+      display: block;
+    }
+
+    /* Shown when dropdown is open/clicked */
+    .drop-down.active .icon-list,
+    .drop-down[aria-expanded="true"] .icon-list {
+      display: none;
+    }
+
+    .drop-down.active .icon-active,
+    .drop-down[aria-expanded="true"] .icon-active {
+      display: block;
+    }
+
+    /* ── FLOATING CONTROLS ──────────────────────── */
+    .topbar {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      gap: 8px;
+      z-index: 999;
+      margin-bottom: 0;
+    }
+
+    .theme-btn,
+    .home-btn {
+      border: 1px solid var(--border);
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      background: var(--bg);
+      color: var(--fg);
+      text-decoration: none;
+      cursor: pointer;
+      user-select: none;
+      transition: background .15s, color .15s;
+    }
+
+    .theme-btn:hover,
+    .home-btn:hover {
+      background: var(--fg);
+      color: var(--canvas);
+    }
+
+    .theme-btn:focus-visible,
+    .home-btn:focus-visible {
+      outline: 2px solid var(--fg);
+      outline-offset: 2px;
+    }
+
+    .theme-btn svg,
+    .home-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .icon-sun,
+    .icon-moon {
+      display: none;
+    }
+
+    [data-theme="dark"] .icon-moon {
+      display: block;
+    }
+
+    [data-theme="light"] .icon-sun {
+      display: block;
+    }
+
+    /* ── MAIN CONTENT WRAPPER ───────────────────── */
+    .main-wrapper {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      flex: 1;
+      border-top: 1px solid var(--border);
+      width: min(1000px, 100% - 32px);
+      margin: 0 auto;
+      padding: 40px 0 0px;
+    }
+
+    /* ── SIDEBAR NAV ────────────────────────────── */
+    .sidebar {
+      border-right: 1px solid var(--border);
+      background: var(--bg2);
+      overflow-y: auto;
+      max-height: calc(100vh - 64px);
+      padding: 0;
+    }
+
+    .sidebar-label {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: .08em;
+      padding: 16px 14px 8px;
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+    }
+
+    .sidebar-nav {
+      padding: 12px 0;
+    }
+
+    .sidebar-nav-item {
+      display: block;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--fg);
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: background .1s, border-color .1s;
+      word-break: break-word;
+    }
+
+    .sidebar-nav-item:hover {
+      background: var(--soft);
+      border-left-color: var(--border);
+    }
+
+    .sidebar-nav-item.active {
+      background: var(--fg);
+      color: var(--canvas);
+      border-left-color: var(--fg);
+      font-weight: 600;
+    }
+
+    /* ── ARTICLE CONTENT ────────────────────────– */
+    .article-wrapper {
+      background: var(--bg);
+      padding: 0;
+      overflow-y: auto;
+      max-height: calc(100vh - 64px);
+    }
+
+    .article {
+      max-width: 75ch;
+      margin: 0 auto;
+      padding: 40px 32px;
+    }
+
+    /* Article header */
+    .article-header {
+      margin-bottom: 48px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 24px;
+    }
+
+    .article-header-meta {
+      font-size: 10px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .article-header-meta .author {
+      font-weight: 600;
+    }
+
+    .article-title {
+      font-size: clamp(28px, 6vw, 52px);
+      font-weight: 800;
+      line-height: 1.2;
+      margin: 16px 0 12px 0;
+      letter-spacing: -.03em;
+    }
+
+    .article-description {
+      font-size: 14px;
+      font-style: italic;
+      color: var(--subtle);
+      line-height: 1.6;
+      margin: 12px 0;
+    }
+
+    /* Article headings */
+    .article h1 {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin: 40px 0 16px 0;
+      letter-spacing: -.02em;
+      scroll-margin-top: 80px;
+    }
+
+    .article h1:first-of-type {
+      margin-top: 30px;
+    }
+
+    .article h2 {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin: 28px 0 12px 0;
+      color: var(--fg);
+    }
+
+    .article h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin: 20px 0 10px 0;
+      color: var(--fg);
+    }
+
+    /* Article paragraphs & lists */
+    .article p {
+      margin: 0 0 16px 0;
+      line-height: 1.75;
+    }
+
+    .article ul,
+    .article ol {
+      margin: 16px 0 16px 20px;
+      padding-left: 0;
+    }
+
+    .article li {
+      margin: 8px 0;
+      list-style-position: inside;
+    }
+
+    .article ul li::marker {
+      content: "• ";
+    }
+
+    .article ol li {
+      list-style: decimal;
+    }
+
+    /* Ordered list with indented paragraph body */
+    .article ol.article-numbered-list {
+      margin: 16px 0 16px 0;
+      padding-left: 24px;
+      /* Space reserved for the number and indent */
+    }
+
+    .article ol.article-numbered-list li {
+      margin: 12px 0;
+      list-style-type: decimal;
+      list-style-position: outside;
+      /* Keeps multiline paragraphs indented past the number */
+      line-height: 1.75;
+    }
+
+    /* Code blocks */
+    .article code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: var(--bg2);
+      padding: 2px 6px;
+      border-radius: 2px;
+      color: var(--fg);
+    }
+
+    .article pre {
+      background: var(--bg2);
+      padding: 16px;
+      overflow-x: auto;
+      margin: 16px 0;
+      border-left: 3px solid var(--border);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .article pre code {
+      background: none;
+      padding: 0;
+      border-radius: 0;
+    }
+
+    /* Blockquotes */
+    .article blockquote {
+      border-left: 3px solid var(--border);
+      padding-left: 16px;
+      margin: 20px 0;
+      font-style: italic;
+      color: var(--subtle);
+    }
+
+    /* Horizontal rule */
+    .article hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 32px 0;
+    }
+
+    /* Images */
+    .article img {
+      max-width: 100%;
+      height: auto;
+      margin: 20px 0 2px 0;
+      border: 1px solid var(--border);
+    }
+
+    .article-img-caption {
+      font-size: 9px;
+      font-style: italic;
+      color: var(--muted);
+      margin-top: 0px;
+      line-height: 1.4;
+      border-top: 0px solid var(--border);
+      padding: 0px 8px 0px 8px;
+      text-align: center;
+    }
+
+    /* ── FOOTER ─────────────────────────────────── */
+    .site-footer {
+      margin-top: 40px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .site-footer a {
+      color: var(--muted);
+    }
+
+    .site-footer a:hover {
+      color: var(--fg);
+    }
+
+    /* ── RESPONSIVE — 800px ─────────────────────– */
+    @media (max-width: 800px) {
+      .main-wrapper {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .article {
+        padding: 28px 20px;
+      }
+
+      .article-title {
+        font-size: clamp(24px, 5vw, 40px);
+      }
+
+      .article h1 {
+        font-size: 24px;
+      }
+    }
+
+    /* ── RESPONSIVE — 480px ─────────────────────– */
+    @media (max-width: 480px) {
+      .topbar-blog {
+        padding: 12px 16px;
+      }
+
+      .article {
+        padding: 20px 16px;
+      }
+
+      .article-title {
+        font-size: 20px;
+      }
+
+      .article h1 {
+        font-size: 18px;
+      }
+
+      .article h2 {
+        font-size: 15px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+
+    <!-- FLOATING BOTTOM-RIGHT CONTROLS -->
+    <div class="topbar">
+      <!-- Theme Toggle Button -->
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="5" />
+          <line x1="12" y1="1" x2="12" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="23" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="1" y1="12" x2="3" y2="12" />
+          <line x1="21" y1="12" x2="23" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+      </button>
+      <!-- Home Button -->
+      <a href="/omal.html" class="home-btn" aria-label="Go to homepage">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      </a>
+    </div>
+
+    <!-- TOP BAR -->
+    <div class="topbar-blog">
+      <div class="topbar-blog-title">blog</div>
+      <button class="drop-down" id="themeBtn" aria-label="Toggle menu" aria-expanded="false">
+        <!-- Normal State Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-list icon-list" aria-hidden="true">
+          <path d="M3 5h.01" />
+          <path d="M3 12h.01" />
+          <path d="M3 19h.01" />
+          <path d="M8 5h13" />
+          <path d="M8 12h13" />
+          <path d="M8 19h13" />
+        </svg>
+
+        <!-- Active/Clicked State Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-list-chevrons-up-down icon-active" aria-hidden="true">
+          <path d="M3 5h8" />
+          <path d="M3 12h8" />
+          <path d="M3 19h8" />
+          <path d="m15 8 3-3 3 3" />
+          <path d="m15 16 3 3 3-3" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- MAIN LAYOUT -->
+    <div class="main-wrapper">
+
+      <!-- SIDEBAR NAV -->
+      <aside class="sidebar">
+        <div class="sidebar-label">sections</div>
+        <nav class="sidebar-nav" id="sidebarNav"></nav>
+      </aside>
+
+      <!-- ARTICLE -->
+      <main class="article-wrapper">
+        <article class="article" id="articleContent">
+
+          <!-- ARTICLE HEADER -->
+          <header class="article-header">
+            <div class="article-header-meta">
+              <span class="author"><em>own by</em> <strong>Omal Matharaarachchi</strong></span>
+              <span><em>copyrights</em> All Rights Reserved</span>
+              <span>support via PayPal omaltrident@hotmail.com</span>
+            </div>
+            <h1 class="article-title">Privacy Policy & Intellectual Property Notice</h1>
+            <p class="article-description">This website respects visitor privacy and protects the original
+              intellectual property, research, writings, concepts, materials, trademarks, and other works
+              published by Omal Matharaarachchi.</p>
+          </header>
+
+          <!-- ARTICLE BODY -->
+          <h2>SECTION I</h2>
+
+          <p>This website is operated as a personal professional and intellectual publication platform. The
+            privacy of visitors is respected, and information is handled with the intention of collecting and
+            processing only what is reasonably necessary for the operation, security, communication, and
+            maintenance of the website.</p>
+
+          <p>When you voluntarily contact me, submit an enquiry, request information, communicate regarding
+            professional matters, or otherwise provide personal information through this website, such
+            information may be used for the legitimate purpose for which it was provided, including responding
+            to correspondence, enquiries, collaboration requests, or other professional communication.</p>
+
+          <p>Technical information may also be processed automatically when accessing a website, including
+            information such as IP address, browser type, operating system, device information, referring
+            pages, access times, and technical server logs. Such information may be used for website security,
+            diagnostics, abuse prevention, performance monitoring, and maintaining the reliability of the
+            website and its infrastructure.</p>
+
+          <blockquote>Privacy — Personal information voluntarily provided through this website is not
+            intentionally sold or commercially traded as part of the ordinary operation of this personal
+            website. Necessary technical service providers may process information where such processing is
+            required to host, secure, maintain, or operate the website.</blockquote>
+
+          <p>This website may use cookies, local storage, analytics technologies, server logs, or similar
+            technical mechanisms where required for functionality, security, performance, or legitimate
+            website operations. Visitors may restrict or disable certain technologies through their browser
+            settings, although doing so may affect particular website functions.</p>
+
+          <h1>Data and communications</h1>
+
+          <p>Any personal information communicated directly to me will be treated with reasonable care and
+            will not be knowingly disclosed to unrelated third parties except where disclosure is required
+            by law, necessary to protect legitimate rights, necessary to operate essential website services,
+            or otherwise authorized by the person concerned.</p>
+
+          <p>Visitors should avoid submitting confidential, sensitive, financial, authentication, or other
+            information through ordinary website communication channels unless such information has been
+            specifically requested through an appropriate secure process.</p>
+
+          <h2>SECTION II</h2>
+
+          <p>All original works published on this website are protected intellectual property unless expressly
+            identified otherwise. This includes, without limitation, articles, essays, reports, research,
+            written analysis, original frameworks, methodologies, concepts, diagrams, graphics, photographs,
+            designs, presentations, educational materials, strategic models, software-related materials,
+            documentation, terminology, branding, logos, names, and other original creative or intellectual
+            works.</p>
+
+          <blockquote>Copyright — Publication on the internet does not constitute a transfer, waiver,
+            abandonment, or unrestricted licence of copyright or any other intellectual property right.
+            Unless expressly stated otherwise, all rights are reserved by the applicable rights holder.</blockquote>
+
+          <p>Copyright in third-party material remains with its respective owner. Where material is expressly
+            identified as belonging to another person, organization, publication, or source, such identification
+            does not transfer ownership of that material to Omal Matharaarachchi.</p>
+
+          <h1>Trademarks and proprietary identity</h1>
+
+          <p>Names, brands, logos, project names, service names, distinctive terminology, trade names,
+            identifiers, and other marks appearing on this website may constitute registered or unregistered
+            trademarks or other protected identifiers. Their appearance on this website does not grant
+            permission to reproduce, imitate, register, appropriate, commercially exploit, or otherwise use
+            such marks without appropriate authorization from the relevant rights holder.</p>
+
+          <p>Any proprietary names, concepts, frameworks, systems, methodologies, project identities, or
+            distinctive terminology developed and published by Omal Matharaarachchi remain subject to the
+            intellectual property rights applicable to them. Use of such material must not be represented as
+            independently created by another person or organization.</p>
+
+          <h2>SECTION III</h2>
+
+          <p>Unsolicited or unauthorized scraping, crawling, automated extraction, systematic copying,
+            harvesting, mirroring, aggregation, republication, redistribution, or commercial exploitation
+            of the content published on this website is expressly prohibited, except where such activity is
+            permitted by applicable law or has been expressly authorized in writing.</p>
+
+          <p>This restriction includes the systematic extraction of articles, reports, research, written
+            materials, proprietary frameworks, concepts, structured information, metadata, databases, or
+            other intellectual property for reproduction, republication, aggregation, commercial exploitation,
+            development of competing material, creation of derivative databases, or other unauthorized use.</p>
+
+          <blockquote>Unauthorized scraping — Public accessibility does not mean that published material is
+            placed in the public domain. Content being visible online does not constitute permission to copy,
+            reproduce, republish, commercially exploit, systematically extract, or otherwise appropriate the
+            underlying work.</blockquote>
+
+          <p>Ordinary search-engine indexing and other lawful technical processes required for normal internet
+            functionality are distinguished from unauthorized systematic extraction or republication of
+            protected content. Nothing in this notice grants a general licence for automated harvesting or
+            reuse.</p>
+
+          <h1>Unauthorized copying and republication</h1>
+
+          <p>Unauthorized copying, reproduction, distribution, republication, commercial exploitation,
+            trademark misuse, systematic extraction, or presentation of protected work as the work of another
+            person may constitute infringement or other unlawful conduct under applicable law, depending upon
+            the nature of the conduct and the jurisdiction in which it occurs.</p>
+
+          <p>Where unauthorized use is identified, appropriate legal and technical measures may be pursued.
+            These may include requests for removal, copyright or other intellectual property notices,
+            takedown requests, restriction of access, preservation of evidence, claims for available remedies,
+            and referral to relevant authorities where appropriate.</p>
+
+          <p>Unauthorized use may therefore expose the responsible person or organization to legal consequences
+            where the conduct falls within applicable copyright, trademark, computer misuse, data protection,
+            contractual, or other relevant legislation. The availability and nature of any legal remedy will
+            depend upon the applicable jurisdiction and circumstances of the infringement.</p>
+
+          <h2>SECTION IV</h2>
+
+          <p>Visitors may access and read publicly available material on this website for personal, educational,
+            research, and other lawful purposes. Reasonable quotations or references may be made where
+            permitted by applicable law and where appropriate attribution is provided.</p>
+
+          <p>Permission should be obtained before reproducing substantial portions of any article, report,
+            research work, framework, educational material, image, design, or other protected work; before
+            republishing material on another website or publication; or before incorporating such material
+            into a commercial product, service, database, training corpus, or competing publication.</p>
+
+          <p>Providing attribution or linking to the original website does not, by itself, constitute
+            authorization to reproduce substantial protected material. Where permission is required,
+            written authorization should be obtained before the proposed use takes place.</p>
+
+          <h1>AI, automated systems and data extraction</h1>
+
+          <p>Automated systems, artificial intelligence systems, language models, data-mining systems,
+            indexing services, aggregators, and similar technologies must not be assumed to have permission
+            to systematically extract, reproduce, store, republish, or commercially exploit protected
+            material published on this website.</p>
+
+          <p>Where the intended use involves systematic collection or processing of this website's content,
+            including the creation of datasets, knowledge bases, training corpora, commercial archives,
+            derivative publications, or competing services, the operator should obtain appropriate
+            authorization before commencing such activity.</p>
+
+          <h2>SECTION V</h2>
+
+          <p>Links, references, quotations, trademarks, logos, and other third-party material appearing on
+            this website remain subject to the rights of their respective owners. Their inclusion does not
+            imply ownership or endorsement unless expressly stated.</p>
+
+          <p>External websites linked from this website operate under their own terms, privacy policies, and
+            practices. I am not responsible for the privacy, security, availability, or content of external
+            websites.</p>
+
+          <h2>SECTION VI</h2>
+
+          <p>This Privacy Policy and Intellectual Property Notice may be updated from time to time to reflect
+            changes in website functionality, technology, security practices, applicable legal requirements,
+            or intellectual property protection measures. The latest version published on this website will
+            represent the current notice.</p>
+
+          <h1>Rights reserved</h1>
+
+          <p>Nothing contained within this website should be interpreted as a waiver of copyright, trademark,
+            privacy, proprietary, contractual, or other rights available under applicable law. All rights
+            not expressly granted are reserved.</p>
+
+          <blockquote>All rights reserved. © Omal Matharaarachchi. All original works, intellectual property,
+            proprietary materials, trademarks, and protected content published on this website remain subject
+            to applicable legal protection. Unauthorized use, scraping, copying, extraction, republication,
+            distribution, or commercial exploitation may result in legal action and other remedies available
+            under applicable law.</blockquote>
+
+        </article>
+      </main>
+
+    </div><!-- /main-wrapper -->
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <span>
+        2026&nbsp;©&nbsp;<a href="" target="_blank" rel="noopener noreferrer">OMAL</a>
+
+      </span>
+      <a href="privacy-policy.html" target="_blank" rel="noopener noreferrer">privacy policy</a>
+    </footer>
+
+  </div><!-- /shell -->
+
+  <script>
+    // Theme toggle
+    const btn = document.getElementById('themeBtn');
+    btn.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      try { localStorage.setItem('om-theme', next); } catch { }
+    });
+
+    // Generate sidebar nav from H1 headings
+    const sidebarNav = document.getElementById('sidebarNav');
+    const articleContent = document.getElementById('articleContent');
+    const headings = Array.from(articleContent.querySelectorAll('h1'));
+
+    headings.forEach((h1, idx) => {
+      const id = h1.id || `heading-${idx}`;
+      h1.id = id;
+
+      const link = document.createElement('a');
+      link.href = `#${id}`;
+      link.className = 'sidebar-nav-item';
+      link.textContent = h1.textContent;
+
+      sidebarNav.appendChild(link);
+    });
+
+    // Track active heading on scroll
+    const articleWrapper = document.querySelector('.article-wrapper');
+    articleWrapper.addEventListener('scroll', () => {
+      let activeId = null;
+      headings.forEach((h1) => {
+        const rect = h1.getBoundingClientRect();
+        if (rect.top <= 100) activeId = h1.id;
+      });
+
+      document.querySelectorAll('.sidebar-nav-item').forEach((link) => {
+        link.classList.toggle('active', link.href.endsWith(`#${activeId}`));
+      });
+    });
+  </script>
+
+  <script>
+    function openFullscreen(imgElement) {
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImg');
+      modal.style.display = 'flex';
+      modalImg.src = imgElement.src;
+    }
+
+    function closeFullscreen() {
+      document.getElementById('imageModal').style.display = 'none';
+    }
+  </script>
+
+  <script>
+    // 1. Block Keyboard Shortcuts (Ctrl+C, Ctrl+A, Ctrl+U, Ctrl+S) and F12 / Inspect
+    document.addEventListener('keydown', function (e) {
+      // Check if Ctrl (or Cmd on Mac) is pressed
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key.toLowerCase()) {
+          case 'a': // Block Select All
+            e.preventDefault();
+            break;
+          case 'c': // Block Copy
+            e.preventDefault();
+            break;
+          case 'u': // Block View Source
+            e.preventDefault();
+            break;
+          case 's': // Block Save Page
+            e.preventDefault();
+            break;
+        }
+      }
+
+      // 2. Block F12 (Developer Tools)
+      if (e.keyCode == 123) {
+        e.preventDefault();
+      }
+
+      // 3. Block Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C (DevTools shortcuts)
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && ['i', 'j', 'c'].includes(e.key.toLowerCase())) {
+        e.preventDefault();
+      }
+    });
+
+    // 4. Block the 'copy' event directly (browser menu or drag-copy)
+    document.addEventListener('copy', function (e) {
+      e.preventDefault();
+    });
+
+    // 5. Block Right-Click Context Menu
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    });
+  </script>
+
+  <script>
+    // 1. Comprehensive Input & Shortcut Blocking
+    document.addEventListener('keydown', function (e) {
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key.toLowerCase()) {
+          case 'a': case 'c': case 'u': case 's': case 'p':
+            e.preventDefault();
+            break;
+        }
+      }
+      if (e.keyCode === 123 || ((e.ctrlKey || e.metaKey) && e.shiftKey && ['i', 'j', 'c'].includes(e.key.toLowerCase()))) {
+        e.preventDefault();
+      }
+    });
+
+    document.addEventListener('copy', function (e) { e.preventDefault(); });
+    document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+
+    // 2. Immediate DOM Content Swap on Visibility Loss / Capture Attempt
+    const sensitiveContentStore = document.body.innerHTML;
+
+    function secureShield(isProtected) {
+      if (isProtected) {
+        document.body.innerHTML = '<div style="background:#111;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:sans-serif;"><div style="color:#ffffff;font-size:24px;">Content Protected</div><div style="color:#808080;font-size:16px;margin-top:10px;">Please hard refresh to return to the site.</div></div>';
+      }
+    }
+
+    // Triggers when an OS snipping tool or window switch takes focus/visibility
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        secureShield(true);
+      }
+    });
+
+    window.addEventListener('blur', function () {
+      secureShield(true);
+    });
+  </script>
+
+</body>
+
+</html>

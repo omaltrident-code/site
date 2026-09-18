@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Omal Matharaarachchi — Overseas Education Counsellor, AI Systems Architect, Author." />
+  <title>Omal Matharaarachchi</title>
+  <script>
+    (() => {
+      let t;
+      try { t = localStorage.getItem('om-theme'); } catch { }
+      /* Light is default; only override if user explicitly chose dark */
+      if (t === 'dark') document.documentElement.dataset.theme = 'dark';
+      /* else stays 'light' as set on the element */
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
+    rel="stylesheet" />
+  <style>
+    /* ── TOKENS ─────────────────────────────────── */
+    :root {
+      /* ── Base ───────────────────────────────────── */
+      --canvas: #f4f4f2;
+      --bg: #ffffff;
+      --bg2: #f0f0ee;
+      --fg: #000000;
+      --muted: #555555;
+      --subtle: #888888;
+      --border: #cacaca;
+      --soft: #e8e8e6;
+
+      --red: #e31e25;
+    }
+
+    :root[data-theme="dark"] {
+      --canvas: #0d0d0d;
+      --bg: #161616;
+      --bg2: #1e1e1e;
+      --fg: #ffffff;
+      --muted: #888888;
+      --subtle: #555555;
+      --border: #2e2e2e;
+      --soft: #252525;
+    }
+
+    /* ── RESET ──────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      background: var(--canvas);
+      color: var(--fg);
+      font-size: 13px;
+      line-height: 1.7;
+      min-height: 100vh;
+      /* prevent horizontal scroll on mobile */
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-color: var(--border);
+      text-underline-offset: 3px;
+      /* ensure tap targets are readable */
+      word-break: break-word;
+    }
+
+    a:hover {
+      text-decoration-color: var(--fg);
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: inherit;
+    }
+
+    img {
+      max-width: 100%;
+    }
+
+    /* ── SHELL ──────────────────────────────────── */
+    .shell {
+      width: min(1000px, 100% - 32px);
+      margin: 0 auto;
+      padding: 40px 0 64px;
+    }
+
+    /* ── FLOATING CONTROLS ──────────────────────── */
+    .topbar {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      gap: 8px;
+      z-index: 999;
+      margin-bottom: 0;
+    }
+
+    .theme-btn,
+    .home-btn {
+      border: 1px solid var(--border);
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      background: var(--bg);
+      color: var(--fg);
+      text-decoration: none;
+      cursor: pointer;
+      user-select: none;
+      transition: background .15s, color .15s;
+    }
+
+    .theme-btn:hover,
+    .home-btn:hover {
+      background: var(--fg);
+      color: var(--canvas);
+    }
+
+    .theme-btn:focus-visible,
+    .home-btn:focus-visible {
+      outline: 2px solid var(--fg);
+      outline-offset: 2px;
+    }
+
+    .theme-btn svg,
+    .home-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .icon-sun,
+    .icon-moon {
+      display: none;
+    }
+
+    [data-theme="dark"] .icon-moon {
+      display: block;
+    }
+
+    [data-theme="light"] .icon-sun {
+      display: block;
+    }
+
+    /* ── HERO NAME-BLOCKS ───────────────────────── */
+    .hero {
+      margin-bottom: 0;
+    }
+
+    .name-blocks {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--border);
+      border-left: 1px solid var(--border);
+    }
+
+    .name-block {
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      font-size: clamp(48px, 10vw, 120px);
+      font-weight: 800;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+      /* responsive vertical padding */
+      padding: clamp(14px, 3vw, 36px) 0;
+      letter-spacing: -.05em;
+      user-select: none;
+    }
+
+    .name-block:nth-child(2) {
+      background: var(--fg);
+      color: var(--canvas);
+    }
+
+    /* Hero meta bar */
+    .hero-meta {
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .hero-meta-item {
+      padding: 14px 16px;
+      font-size: 11px;
+      border-right: 1px solid var(--border);
+    }
+
+    .hero-meta-item:last-child {
+      border-right: 0;
+    }
+
+    .hero-meta-item .label {
+      color: var(--muted);
+      font-size: 9px;
+      letter-spacing: .08em;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .hero-meta-item .value {
+      font-weight: 600;
+      font-size: 11px;
+      word-break: break-word;
+    }
+
+    /* ── SECTION GRID ───────────────────────────── */
+    .page-grid {
+      border-top: 1px solid var(--border);
+      border-left: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      margin-top: 40px;
+    }
+
+    .section-label {
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+      padding: 16px 14px;
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 700;
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      /* prevent long words from blowing out the column */
+      word-break: break-word;
+    }
+
+    .section-body {
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      padding: 16px 20px;
+      /* prevent overflow on small screens */
+      min-width: 0;
+    }
+
+    /* ── CONTACT ────────────────────────────────── */
+    .contact-list {
+      display: grid;
+      gap: 0;
+    }
+
+    .contact-item {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 10px;
+      align-items: center;
+      /* 44px min height for touch */
+      min-height: 44px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--soft);
+      font-size: 12px;
+    }
+
+    .contact-item:last-child {
+      border-bottom: 0;
+    }
+
+    .contact-item .c-type {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .contact-item a {
+      font-weight: 600;
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .contact-item a:hover {
+      text-decoration: underline;
+      text-decoration-color: var(--fg);
+    }
+
+    /* ── TAG LIST ───────────────────────────────── */
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      font-size: 11px;
+      background: var(--bg2);
+      color: var(--fg);
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    /* ── LINK LIST ──────────────────────────────── */
+    .link-list {
+      display: grid;
+      gap: 0;
+    }
+
+    .link-item {
+      border-bottom: 1px solid var(--soft);
+      /* 44px min touch target */
+      min-height: 44px;
+      padding: 8px 0;
+      font-size: 12px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .link-item:last-child {
+      border-bottom: 0;
+    }
+
+    .link-item a {
+      text-decoration: none;
+      font-weight: 500;
+      word-break: break-word;
+    }
+
+    .link-item a:hover {
+      text-decoration: underline;
+      text-decoration-color: var(--fg);
+    }
+
+    .link-item .badge {
+      font-size: 9px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 3px 7px;
+      white-space: nowrap;
+    }
+
+    /* Non-link text in link-item (e.g. Neuromarketing) */
+    .link-item>span:first-child {
+      font-weight: 500;
+    }
+
+    /* ── PLAIN LIST ─────────────────────────────── */
+    .plain-list {
+      display: grid;
+      gap: 0;
+    }
+
+    .plain-item {
+      border-bottom: 1px solid var(--soft);
+      padding: 9px 0;
+      font-size: 12px;
+      word-break: break-word;
+    }
+
+    .plain-item:last-child {
+      border-bottom: 0;
+    }
+
+    /* ── ORG BLOCK ──────────────────────────────── */
+    .org-block {
+      border-bottom: 1px solid var(--soft);
+      padding: 10px 0;
+      font-size: 12px;
+    }
+
+    .org-block:last-child {
+      border-bottom: 0;
+    }
+
+    .org-block a {
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .org-block a:hover {
+      text-decoration: underline;
+    }
+
+    .org-block .org-type {
+      color: var(--muted);
+      font-size: 10px;
+      margin-top: 2px;
+    }
+
+    /* ── FICTION COLUMNS ────────────────────────── */
+    .fiction-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-top: 1px solid var(--soft);
+      margin-top: 8px;
+    }
+
+    .fiction-col {
+      padding: 12px 16px 0 0;
+    }
+
+    .fiction-col:last-child {
+      padding-right: 0;
+      padding-left: 16px;
+      border-left: 1px solid var(--soft);
+    }
+
+    .fiction-col-head {
+      font-size: 9px;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--soft);
+    }
+
+    /* ── FOOTER ─────────────────────────────────── */
+    .site-footer {
+      margin-top: 40px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .site-footer a {
+      color: var(--muted);
+    }
+
+    .site-footer a:hover {
+      color: var(--fg);
+    }
+
+    /* ── RESPONSIVE — 700px ─────────────────────── */
+    @media (max-width: 700px) {
+      .shell {
+        padding: 28px 0 48px;
+      }
+
+      /* Name blocks: 2×2 grid */
+      .name-blocks {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      /* Hero meta: single column */
+      .hero-meta {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-meta-item {
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .hero-meta-item:last-child {
+        border-bottom: 0;
+      }
+
+      /* Page grid: single column, label above body */
+      .page-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-label {
+        border-right: 1px solid var(--border);
+        border-bottom: 0;
+        padding: 10px 14px 6px;
+        /* horizontal separator above each section */
+        border-top: 2px solid var(--border);
+      }
+
+      /* remove double top border for first label */
+      .page-grid .section-label:first-child {
+        border-top: 0;
+      }
+
+      .section-body {
+        /* label's right border already closes it */
+        border-right: 1px solid var(--border);
+        padding: 12px 14px 16px;
+      }
+
+      /* Fiction two-col stays as is (content is short) */
+    }
+
+    /* ── RESPONSIVE — 480px ─────────────────────── */
+    @media (max-width: 480px) {
+      .shell {
+        width: auto;
+        margin: 0 12px;
+        padding: 20px 0 48px;
+      }
+
+      /* Name blocks: single row, 4 across — let font scale */
+      .name-blocks {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .name-block {
+        font-size: clamp(22px, 6vw, 52px);
+        padding: 12px 0;
+      }
+
+      /* Fiction: stack columns */
+      .fiction-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .fiction-col {
+        padding-right: 0;
+      }
+
+      .fiction-col:last-child {
+        border-left: 0;
+        padding-left: 0;
+        border-top: 1px solid var(--soft);
+        margin-top: 10px;
+        padding-top: 10px;
+      }
+
+      /* Link item: badge wraps below on very small screens */
+      .link-item {
+        grid-template-columns: 1fr;
+        gap: 4px;
+        padding: 10px 0;
+      }
+
+      .link-item .badge {
+        align-self: start;
+        display: inline-block;
+      }
+
+      /* Contact: tighter column */
+      .contact-item {
+        grid-template-columns: 60px 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+
+    <!-- FLOATING BOTTOM-RIGHT CONTROLS -->
+    <div class="topbar">
+      <!-- Theme Toggle Button -->
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="5" />
+          <line x1="12" y1="1" x2="12" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="23" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="1" y1="12" x2="3" y2="12" />
+          <line x1="21" y1="12" x2="23" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+      </button>
+      <!-- Home Button -->
+      <a href="/omal.html" class="home-btn" aria-label="Go to homepage">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      </a>
+    </div>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="name-blocks" aria-label="Omal">
+        <div class="name-block" aria-hidden="true">O</div>
+        <div class="name-block" aria-hidden="true">M</div>
+        <div class="name-block" aria-hidden="true">A</div>
+        <div class="name-block" aria-hidden="true">L</div>
+      </div>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <span class="label">last name</span>
+          <span class="value">Matharaarachchi</span>
+        </div>
+        <div class="hero-meta-item">
+          <span class="label">practice</span>
+          <span class="value">[ Neural System Designer ]</span>
+        </div>
+        <div class="hero-meta-item">
+          <span class="label">location</span>
+          <span class="value">Colombo — Remote</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN GRID -->
+    <div class="page-grid">
+
+      <!-- SOCIAL MEDIA -->
+      <div class="section-label">social posts</div>
+      <div class="section-body">
+        <ul class="contact-list">
+          <li class="contact-item">
+            <span class="c-type">GitHub</span>
+            <a href="https://github.com/omaltrident-code" target="_blank"
+              rel="noopener noreferrer">github.com/omaltrident-code</a>
+          </li>
+          <li class="contact-item">
+            <span class="c-type">LinkedIn</span>
+            <a href="http://www.linkedin.com/in/omaltrident" target="_blank"
+              rel="noopener noreferrer">linkedin.com/in/omaltrident</a>
+          </li>
+          <li class="contact-item">
+            <span class="c-type">Facebook</span>
+            <a href="https://web.facebook.com/omaltrident" target="_blank"
+              rel="noopener noreferrer">facebook.com/omaltrident</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- CONCENTRATIONS -->
+      <div class="section-label">concentrations</div>
+      <div class="section-body">
+        <div class="tag-list">
+          <span class="tag">Neural Systems Designing</span>
+          <span class="tag">Data-driven Decision Making</span>
+          <span class="tag">Change Management for Generative AI</span>
+          <span class="tag">AI-driven Content Generation</span>
+          <span class="tag">Business &amp; Marketing Strategy</span>
+          <span class="tag">Sustainable Business Enhancement</span>
+          <span class="tag">Storytelling &amp; Creative Writing</span>
+          <span class="tag">Student Consulting &amp; Counselling</span>
+
+        </div>
+      </div>
+
+      <!-- ACADEMIC PAPERS -->
+      <div class="section-label">academic papers</div>
+      <div class="section-body">
+        <ul class="link-list">
+          <li class="link-item">
+            <a href="/blog-article1.html" target="_blank" rel="noopener noreferrer">Generative
+              AI &amp; Organizational Adaptation</a>
+            <span class="badge">Report</span>
+          </li>
+          <li class="link-item">
+            <a href="https://www.magcloud.com/browse/issue/3006046" target="_blank" rel="noopener noreferrer">Data
+              Literacy &amp; Decision-making Imperatives</a>
+            <span class="badge">Report</span>
+          </li>
+          <li class="link-item">
+            <a href="https://www.linkedin.com/pulse/how-elevate-employee-mindset-five-steps-omal-arachi/"
+              target="_blank" rel="noopener noreferrer">How to Elevate Employee Mindset</a>
+            <span class="badge">Report</span>
+          </li>
+          <li class="link-item">
+            <a href="https://www.linkedin.com/pulse/evaluation-seven-i-holdings-co-ltd-omalka-arachi-1wpoc/"
+              target="_blank" rel="noopener noreferrer">Seven &amp; i Group — Strategy Evaluation</a>
+            <span class="badge">Model</span>
+          </li>
+          <li class="link-item">
+            <a href="https://www.linkedin.com/pulse/amazon-go-uk-model-marketing-research-omalka-arachi-hep8c/"
+              target="_blank" rel="noopener noreferrer">Amazon Go UK — Marketing Research</a>
+            <span class="badge">Model</span>
+          </li>
+          <li class="link-item">
+            <a href="https://www.linkedin.com/pulse/entrepreneurs-leaders-omal-arachi/" target="_blank"
+              rel="noopener noreferrer">Entrepreneurs Are to Be Leaders</a>
+            <span class="badge">Article</span>
+          </li>
+          <li class="link-item">
+            <a href="https://medium.com/@futurewisecounselling/the-role-of-student-counsellors-in-academic-and-psychological-assessment-aligned-with-global-788660aede5f"
+              target="_blank" rel="noopener noreferrer">The Role of Student Counselors</a>
+            <span class="badge">Arti</span>
+          </li>
+          <li class="link-item">
+            <span>Neuromarketing</span>
+            <span class="badge">Thesis</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- ORGANIZATIONS -->
+      <div class="section-label">founded models</div>
+      <div class="section-body">
+        <div class="org-block">
+          <div>
+            <a href="https://www.wizentus.com" style="color: var(--red);" target="_blank" rel="noopener noreferrer">
+              Wizentus™ Neural
+            </a>
+          </div>
+          <div class="org-type">Merging generative intelligence, at the speed of thought, to compute for the next
+            digital epoch.<br>
+            <div style="margin-left: 16px; margin-top: 6px;">
+              <em>Specializing in,</em>
+              <ul style="list-style-type: disc; padding-left: 20px; margin-top: 4px;">
+                <li><strong>enterprise [IP] design</strong></li>
+                <li><strong>prompt engineering</strong></li>
+                <li><strong>RAG and orchestration</strong></li>
+                <li><strong>Turing testing</strong></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="org-block">
+          <div><a href="https://www.linkedin.com/company/wiznack/" target="_blank" rel="noopener noreferrer">Wiznack
+              Media</a>
+          </div>
+          <div class="org-type">Content Production Firm — Business Model</div>
+        </div>
+        <div class="org-block">
+          <div><a href="https://www.linkedin.com/company/evgrace/" target="_blank" rel="noopener noreferrer">EVG
+              Sustainability</a></div>
+          <div class="org-type">Operations Consulting Firm — Business Model</div>
+        </div>
+        <div class="org-block">
+          <div>TF Publishers</div>
+          <div class="org-type">Publishing Entity</div>
+        </div>
+      </div>
+
+      <!-- SCIENCE FICTION -->
+      <div class="section-label">
+        science fictions
+        <span style="font-weight:400;font-size:9px;color:var(--subtle);margin-top:3px;">Indie Author</span>
+      </div>
+      <div class="section-body">
+        <div class="fiction-grid">
+          <div class="fiction-col">
+            <div class="fiction-col-head">cosmic prophecy series [unpublished]</div>
+            <ul class="plain-list">
+              <li class="plain-item">Subtle<br><span style="font-size:10px;color:var(--muted)">Novel · Book I (160,000
+                  W Circa)</span>
+              </li>
+              <li class="plain-item">Foreigner<br><span style="font-size:10px;color:var(--muted)">Novella · Subplot
+                  (70,000 W Circa)</span>
+              </li>
+              <li class="plain-item">Promised One<br><span style="font-size:10px;color:var(--muted)">Novel · Book II
+                  (90,000 W
+                  Circa)</span>
+              </li>
+              <li class="plain-item">Zeta Returns<br><span style="font-size:10px;color:var(--muted)">Novel · Book III
+                  (80,000 W
+                  Circa)</span>
+              </li>
+            </ul>
+          </div>
+          <div class="fiction-col">
+            <div class="fiction-col-head">other pieces</div>
+            <ul class="plain-list">
+              <li class="plain-item">Brain Hacker<br><span style="font-size:10px;color:var(--muted)">Short
+                  Story [unpublished]</span>
+              </li>
+              <li class="plain-item">Father Son and the Holy Rocket Amen!<br><span
+                  style="font-size:10px;color:var(--muted)">Short Story [submitted]</span></li>
+              <li class="plain-item">Marathoning to a Fugue<br><span style="font-size:10px;color:var(--muted)">Short
+                  Story [unpublished]</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- OTHER FICTIONS -->
+      <div class="section-label">other fictions</div>
+      <div class="section-body">
+        <ul class="link-list">
+          <li class="link-item">
+            <a href="https://books2read.com/youfoundmeomaldonspater" target="_blank" rel="noopener noreferrer">You
+              Found
+              Me</a>
+            <span class="badge">Contemporary Romance Novel</span>
+          </li>
+          <li class="link-item">
+            <a href="https://books2read.com/thedanzigmanor-omaldonspater" target="_blank"
+              rel="noopener noreferrer">Danzig Manor</a>
+            <span class="badge">Mystery (crime) Novella</span>
+          </li>
+          <li class="link-item">
+            <a href="https://books2read.com/thedanzigmanor-omaldonspater" target="_blank"
+              rel="noopener noreferrer">Final Dawn</a>
+            <span class="badge">High Fantasy Novella</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- NON FICTION -->
+      <div class="section-label">non fictions</div>
+      <div class="section-body">
+        <ul class="plain-list">
+          <li class="plain-item">A US &amp; Mexico Border Story<br><span style="font-size:10px;color:var(--muted)">True
+              story — unpublished</span></li>
+        </ul>
+      </div>
+
+      <!-- COMPILATIONS -->
+      <div class="section-label">compilations</div>
+      <div class="section-body">
+        <ul class="link-list">
+          <li class="link-item">
+            <a href="https://www.magcloud.com/browse/issue/3024349" target="_blank" rel="noopener noreferrer">Though
+              Imagine</a>
+            <span class="badge">Magazine</span>
+          </li>
+          <li class="link-item">
+            <a href="https://www.magcloud.com/browse/issue/3006046" target="_blank" rel="noopener noreferrer">Wiznack
+              Business Notice</a>
+            <span class="badge">Zine Post</span>
+          </li>
+          <li class="link-item">
+            <a href="https://anyflip.com/homepage/vwrfy/" target="_blank" rel="noopener noreferrer">Just Imagine</a>
+            <span class="badge">Zine Post</span>
+          </li>
+          <li class="link-item">
+            <a href="https://anyflip.com/bookcase/ocbxf" target="_blank" rel="noopener noreferrer">iWrite</a>
+            <span class="badge">Magazine</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- RESOURCES -->
+      <div class="section-label">resources</div>
+      <div class="section-body">
+        <ul class="link-list">
+          <li class="link-item">
+            <a href="https://medium.com/@omaltrident" target="_blank" rel="noopener noreferrer">Science Fiction
+              Blog</a>
+            <span class="badge">Medium</span>
+          </li>
+          <li class="link-item">
+            <a href="https://medium.com/@futurewisecounselling" target="_blank" rel="noopener noreferrer">Student
+              Counseling Blog</a>
+            <span class="badge">Medium</span>
+          </li>
+        </ul>
+      </div>
+
+    </div><!-- /page-grid -->
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <span>
+        2026&nbsp;©&nbsp;<a href="" target="_blank" rel="noopener noreferrer">OMAL</a>
+
+      </span>
+      <a href="/privacy-policy.html" target="_blank" rel="noopener noreferrer">privacy policy</a>
+    </footer>
+
+  </div><!-- /shell -->
+
+  <script>
+    const btn = document.getElementById('themeBtn');
+    btn.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      try { localStorage.setItem('om-theme', next); } catch { }
+    });
+  </script>
+
+  <script>
+    // 1. Block Keyboard Shortcuts (Ctrl+C, Ctrl+A, Ctrl+U, Ctrl+S) and F12 / Inspect
+    document.addEventListener('keydown', function (e) {
+      // Check if Ctrl (or Cmd on Mac) is pressed
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key.toLowerCase()) {
+          case 'a': // Block Select All
+            e.preventDefault();
+            break;
+          case 'c': // Block Copy
+            e.preventDefault();
+            break;
+          case 'u': // Block View Source
+            e.preventDefault();
+            break;
+          case 's': // Block Save Page
+            e.preventDefault();
+            break;
+        }
+      }
+
+      // 2. Block F12 (Developer Tools)
+      if (e.keyCode == 123) {
+        e.preventDefault();
+      }
+
+      // 3. Block Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C (DevTools shortcuts)
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && ['i', 'j', 'c'].includes(e.key.toLowerCase())) {
+        e.preventDefault();
+      }
+    });
+
+    // 4. Block the 'copy' event directly (browser menu or drag-copy)
+    document.addEventListener('copy', function (e) {
+      e.preventDefault();
+    });
+
+    // 5. Block Right-Click Context Menu
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    });
+  </script>
+
+  <script>
+    // 1. Comprehensive Input & Shortcut Blocking
+    document.addEventListener('keydown', function (e) {
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key.toLowerCase()) {
+          case 'a': case 'c': case 'u': case 's': case 'p':
+            e.preventDefault();
+            break;
+        }
+      }
+      if (e.keyCode === 123 || ((e.ctrlKey || e.metaKey) && e.shiftKey && ['i', 'j', 'c'].includes(e.key.toLowerCase()))) {
+        e.preventDefault();
+      }
+    });
+
+    document.addEventListener('copy', function (e) { e.preventDefault(); });
+    document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+
+    // 2. Immediate DOM Content Swap on Visibility Loss / Capture Attempt
+    const sensitiveContentStore = document.body.innerHTML;
+
+    function secureShield(isProtected) {
+      if (isProtected) {
+        document.body.innerHTML = '<div style="background:#111;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:sans-serif;"><div style="color:#ffffff;font-size:24px;">Content Protected</div><div style="color:#808080;font-size:16px;margin-top:10px;">Please hard refresh to return to the site.</div></div>';
+      }
+    }
+
+    // Triggers when an OS snipping tool or window switch takes focus/visibility
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        secureShield(true);
+      }
+    });
+
+    window.addEventListener('blur', function () {
+      secureShield(true);
+    });
+  </script>
+
+</body>
+
+</html>

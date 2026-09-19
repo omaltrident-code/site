@@ -9,7 +9,7 @@
   <script>
     (() => {
       let t;
-      try {t = localStorage.getItem('om-theme');} catch { }
+      try { t = localStorage.getItem('om-theme'); } catch { }
       if (t === 'dark') document.documentElement.dataset.theme = 'dark';
     })();
   </script>
@@ -29,6 +29,8 @@
       --border: #cacaca;
       --soft: #e8e8e6;
       --accent: #000000;
+      --wiznack-ylw: #fad02c;
+      --evg-grn: #00bf63;
     }
 
     :root[data-theme="dark"] {
@@ -811,7 +813,7 @@
     btn.addEventListener('click', () => {
       const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
       document.documentElement.dataset.theme = next;
-      try {localStorage.setItem('om-theme', next);} catch { }
+      try { localStorage.setItem('om-theme', next); } catch { }
     });
 
     // Generate sidebar nav from H1 headings
@@ -917,8 +919,8 @@
       }
     });
 
-    document.addEventListener('copy', function (e) {e.preventDefault();});
-    document.addEventListener('contextmenu', function (e) {e.preventDefault();});
+    document.addEventListener('copy', function (e) { e.preventDefault(); });
+    document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 
     // 2. Immediate DOM Content Swap on Visibility Loss / Capture Attempt
     const sensitiveContentStore = document.body.innerHTML;

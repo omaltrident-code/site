@@ -355,12 +355,22 @@
       text-decoration-color: var(--fg);
     }
 
+    /* Specific class to strip link hover styles for unlinked items */
+    .link-item a.plain-text,
+    .link-item a.plain-text:hover {
+      text-decoration: none !important;
+      color: inherit;
+      cursor: default;
+    }
+
     .link-item .badge {
       font-size: 9px;
       color: var(--muted);
       border: 1px solid var(--border);
       padding: 3px 7px;
-      white-space: nowrap;
+      justify-self: end;
+      text-align: right;
+      /* Aligns multi-line text to the right */
     }
 
     /* Non-link text in link-item (e.g. Neuromarketing) */
@@ -811,19 +821,18 @@
         <ul class="link-list">
           <li class="link-item">
             <a href="https://books2read.com/youfoundmeomaldonspater" target="_blank" rel="noopener noreferrer">You
-              Found
-              Me</a>
-            <span class="badge">Contemporary Romance Novel</span>
+              Found Me</a>
+            <span class="badge">Contemporary Romance<br>[published Novel]</span>
           </li>
           <li class="link-item">
             <a href="https://books2read.com/thedanzigmanor-omaldonspater" target="_blank"
               rel="noopener noreferrer">Danzig Manor</a>
-            <span class="badge">Mystery (crime) Novella</span>
+            <span class="badge">Mystery (crime) <br>[published Novella]</span>
           </li>
           <li class="link-item">
             <a href="#" style="text-decoration: none !important; color: inherit; cursor: text; pointer-events: none;"
               target="_blank" rel="noopener noreferrer">Final Dawn</a>
-            <span class="badge">High Fantasy Novella</span>
+            <span class="badge">High Fantasy (myth)<br>[unpublished Novella]</span>
           </li>
         </ul>
       </div>
